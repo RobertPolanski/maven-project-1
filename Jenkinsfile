@@ -27,13 +27,20 @@ pipeline {
             parallel {
                 stage('Deploy to Staging') {
                     steps {
-                        sh "scp -i /u1/programme/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
+                        sh "rsync -p --chmod=u+rwx,g+rwx,o+rwx \
+                                -e 'ssh -i /u1/programme/tomcat-demo.pem' \
+                                /home/robert/.jenkins/jobs/FullyAutomated/builds/5/archive/**/target/*.war \
+                                ec2-user@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
+
                     }
                 }
 
                 stage("Deploy to Production") {
                     steps {
-                        sh "scp -i /u1/programme/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
+                        sh "rsync -p --chmod=u+rwx,g+rwx,o+rwx \
+                                -e 'ssh -i /u1/programme/tomcat-demo.pem' \
+                                /home/robert/.jenkins/jobs/FullyAutomated/builds/5/archive/**/target/*.war \
+                                ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
                     }
                 }
             }
